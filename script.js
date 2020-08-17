@@ -79,39 +79,41 @@ function updateGameArea() {
 }
 function init() {
     newGameArea = new gameArea()
-    player = new Player("#ecedee",100,400)
+    player = new Player(100,400)
     document.addEventListener("keydown",playerControlKeyPressed, false);	
 	document.addEventListener("keyup",playerControlKeyReleased, false);
 }
 class Player {
     constructor (
-        fillColor="white",x=0,y=0,height=80,width=40,speed=3
+        x=0,y=0,height=80,width=40,speed=3
     ) {
         this.x = Number(x)
         this.y = Number(y)
         this.width = Number(width)
         this.height = Number(height)
-        this.fillColor = fillColor
+        this.charAlpha = 1;
+        this.fillColor = `rgb(225, 237, 232,${this.charAlpha})`
         this.ctx = newGameArea.context
         this.speed = speed
         this.rCollision = false
         this.lCollision = false
         this.uCollision = false
         this.dCollision = false
-        this.gravity = 5
         this.gravityAvailabe = true
         this.jumpHeightDiv = 30
         this.jumpHeightPerDiv = 8
         this.inAir = true
         this.jumpPressed = false
         this.charAnimCycle = 0;
-        setInterval(()=>{
-            this.addGravity()
-        },2)
+        this.deathAnimCycle = 0;
+        this.startX = x
+        this.startY = y
         this.characterDraw()
+        this.isAlive = true
         
     }
     start() {
+        this.addGravity()
         this.borderCollision()
         this.characterDraw()
         this.attachControls()
@@ -125,6 +127,7 @@ class Player {
         if(this.x <= 0) {
             this.lCollision = true
             this.rCollision = false
+            this.isAlive = false
         }
         else if(this.x+this.width >= newGameArea.width){
             this.lCollision = false
@@ -212,13 +215,50 @@ class Player {
         }
     }
     attachControls(){
-        this.onJump()
-        this.onRight()
-        this.onLeft()
-        this.onUp()
-        this.onDown()
+        if(this.isAlive){
+            this.onJump()
+            this.onRight()
+            this.onLeft()
+            this.onUp()
+            this.onDown()
+        }
     }
     characterDraw() {
+        var eyePos = this.x
+        var eyeSize = [5,2]
+        var eyeCycle = 800;
+        if(this.charAnimCycle >eyeCycle && this.charAnimCycle <eyeCycle+50){
+            eyeSize = [1,0]
+            
+        }
+        else if(this.charAnimCycle > eyeCycle+50){
+            this.charAnimCycle = 0
+        }
+        if(playerControl.LEFT && this.isAlive){
+            eyePos = this.x-4
+        }
+        if(playerControl.RIGHT && this.isAlive){
+            eyePos = this.x+4
+        }
+        if(!this.isAlive){
+            this.deathAnimCycle +=1;
+            eyeSize = [1,0]
+            if(this.deathAnimCycle>0 &&this.deathAnimCycle<200){
+                this.ctx.font = 'bold 18px Monospace'
+                this.ctx.fillText('x', eyePos+5, this.y+15)
+                this.ctx.fillText('x', eyePos+25, this.y+15)
+                this.charAlpha -= 0.01;
+                this.fillColor = `rgb(225, 237, 232,${this.charAlpha})`
+            }
+            else if(this.deathAnimCycle >200){
+                this.x = this.startX
+                this.y = this.startY
+                this.deathAnimCycle = 0
+                this.isAlive = true
+                this.charAlpha = 1
+                this.fillColor = `rgb(225, 237, 232,${this.charAlpha})`
+            }
+        }
         this.charAnimCycle += 1;
         this.ctx.lineWidth = 4
         this.ctx.strokeStyle = this.fillColor
@@ -231,22 +271,6 @@ class Player {
         this.ctx.fillRect(this.x+5, this.y+60, 10, 20);
         this.ctx.fillRect(this.x+25, this.y+60, 10, 20);
         //eye
-        var eyePos = this.x
-        var eyeSize = [5,2]
-        var eyeCycle = 800;
-        if(this.charAnimCycle >eyeCycle && this.charAnimCycle <eyeCycle+50){
-            eyeSize = [1,0]
-            
-        }
-        else if(this.charAnimCycle > eyeCycle+50){
-            this.charAnimCycle = 0
-        }
-        if(playerControl.LEFT){
-            eyePos = this.x-4
-        }
-        if(playerControl.RIGHT){
-            eyePos = this.x+4
-        }
         this.ctx.beginPath()
         this.ctx.ellipse(eyePos+10, this.y+10, eyeSize[0], eyeSize[1], Math.PI / 2, 0, 2 * Math.PI);
         this.ctx.fill()
