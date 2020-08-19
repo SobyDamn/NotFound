@@ -78,9 +78,9 @@ var testObject
 var testObject2
 function updateGameArea() {
     newGameArea.clear()
-    player.start()
     testObject.objectInit()
     testObject2.objectInit()
+    player.start()
 }
 function init() {
     newGameArea = new gameArea()
@@ -106,7 +106,7 @@ class Player {
         this.lCollision = false
         this.uCollision = false
         this.dCollision = false
-        this.gravityAvailabe = false
+        this.gravityAvailabe = true
         this.jumpHeightDiv = 33 //YEh height control krta hai
         this.jumpHeightPerDiv = 11 //yeh speed control krega
         this.inAir = true
@@ -364,55 +364,28 @@ class ObjectMaterial {
         this.storeKeyHistory()
         if(!this.isColliding){
             //console.log(this.playerKeyHistory[0])
-            if(y<=this.y+this.height && y>=this.y && this.playerKeyHistory[1]){
-                //D collision
-                if(x+player.width>=this.x && x<=this.x+this.width){
-                    this.collision[2] = true
-                    //this.collision[0] = false
-                    console.log("collision D ",this.name)
-                    //player.uCollision = true
-                    //player.dCollision = false
-                }
-            }
-            if(this.playerKeyHistory[0] && x<this.x+this.width && x>this.x){
-                if(y+player.height>=this.y+3  && y<=this.y+this.height) {
-                    //R collision
-                    this.collision[1] = true
-                    //this.collision[3] = false
-                    console.log("collision R ",this.name)
-                    //player.lCollision = true
-                    //player.rCollision = false
-                }
-            }
-            else if((this.playerKeyHistory[0] && (this.playerKeyHistory[1] || this.playerKeyHistory[3])) && x<this.x+this.width && x>this.x){
-                this.collision[1] = true
-                    //this.collision[3] = false
-                    console.log("collision R ",this.name)
-            }
-            if(this.playerKeyHistory[2] && x+player.width>this.x && x+player.width<this.x+this.width){
-                if(y+player.height>this.y+3 && y<this.y+this.height) {
+            if(y+player.height>=this.y+3 && y<=this.y+this.height) {
+                if(this.playerKeyHistory[2] && x+player.width>this.x && x+player.width<this.x+this.width){
                     //L collision
                     this.collision[3] = true
-                    //this.collision[1] = false
                     console.log("collision L ",this.name) 
-                    //player.rCollision = true
-                    //player.lCollision = false
+                }
+                if(this.playerKeyHistory[0] && x<this.x+this.width && x>this.x){
+                    //R collision
+                    this.collision[1] = true
+                    console.log("collision R ",this.name)
                 }
             }
-            else if(this.playerKeyHistory[2] && (this.playerKeyHistory[1] || this.playerKeyHistory[3]) && x+player.width>this.x && x+player.width<this.x+this.width){
-                this.collision[3] = true
-                    //this.collision[1] = false
-                    console.log("collision L ",this.name)
-            }
-            if (y+player.height>=this.y &&y+player.height<=this.y+this.height && this.playerKeyHistory[3]){
-                if(x+player.width>=this.x && x<=this.x+this.width){
-                    //player.y = this.y - player.height
+            else if(x+player.width>=this.x && x<=this.x+this.width){
+                if(y<=this.y+this.height && y>=this.y && this.playerKeyHistory[1]){
+                    //D collision
+                    this.collision[2] = true
+                    console.log("collision D ",this.name)
+                }
+                if (y+player.height>=this.y &&y+player.height<=this.y+this.height && this.playerKeyHistory[3]){
                     //U collision
                     this.collision[0] = true
-                    //this.collision[2] = false
                     console.log("collision U ",this.name)
-                    //player.dCollision = true
-                    //player.uCollision = false
                 }
             }
         }
