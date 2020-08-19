@@ -1,4 +1,5 @@
 var newGameArea;
+var ctx
 var player;
 var playerControl = {
   LEFT: false,
@@ -73,13 +74,20 @@ class gameArea {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
+var testObject
+var testObject2
 function updateGameArea() {
     newGameArea.clear()
     player.start()
+    testObject.objectInit()
+    testObject2.objectInit()
 }
 function init() {
     newGameArea = new gameArea()
-    player = new Player(100,400)
+    ctx = newGameArea.context
+    player = new Player(100,100)
+    testObject = new ObjectMaterial(player.x-50,200,410,250,"first")
+    testObject2 = new ObjectMaterial(player.x+450,440,400,50,"second")
     document.addEventListener("keydown",playerControlKeyPressed, false);	
 	document.addEventListener("keyup",playerControlKeyReleased, false);
 }
@@ -93,15 +101,14 @@ class Player {
         this.height = Number(height)
         this.charAlpha = 1;
         this.fillColor = `rgb(225, 237, 232,${this.charAlpha})`
-        this.ctx = newGameArea.context
         this.speed = speed
         this.rCollision = false
         this.lCollision = false
         this.uCollision = false
         this.dCollision = false
-        this.gravityAvailabe = true
-        this.jumpHeightDiv = 30
-        this.jumpHeightPerDiv = 8
+        this.gravityAvailabe = false
+        this.jumpHeightDiv = 33 //YEh height control krta hai
+        this.jumpHeightPerDiv = 11 //yeh speed control krega
         this.inAir = true
         this.jumpPressed = false
         this.charAnimCycle = 0;
@@ -118,45 +125,42 @@ class Player {
         this.characterDraw()
         this.attachControls()
     }
-    newPos(moveX=0,moveY=0){
-        this.x += moveX;
-        this.y += moveY; 
+    newPos(val){
+        //1,2,3,4 as URDL
+        if(this.isAlive){
+            if(val==1 && !this.uCollision){
+                this.y -=1
+            }
+            if(val==2 && !this.rCollision){
+                this.x +=1
+            }
+            if(val==3 && !this.dCollision){
+                this.y +=1
+            }
+            if(val==4 && !this.lCollision){
+                this.x -=1
+            }
+        }
     }
 
     borderCollision() {
-        if(this.x <= 0) {
-            this.lCollision = true
-            this.rCollision = false
-            this.isAlive = false
-        }
-        else if(this.x+this.width >= newGameArea.width){
-            this.lCollision = false
-            this.rCollision = true
-        }
-        else {
-            this.rCollision = false
-            this.lCollision = false
-        }
-        if(this.y <=0){
-            this.uCollision = true
-            this.dCollision = false
-        }
-        else if(this.y+this.height>=newGameArea.height){
-            this.uCollision = false
-            this.dCollision = true
+        if (this.dCollision){
             this.inAir = false
         }
         else {
-            this.uCollision = false
-            this.dCollision = false
+            this.inAir = true
+        }
+        if(this.y+this.height >=newGameArea.height){
+            this.isDead()
         }
     }
     async addGravity() {
         var move = 1;
+        //playerControl.DOWN = this.gravityAvailabe
         if(this.gravityAvailabe){
-            while(move<this.speed*2 && !this.dCollision) {
-                this.newPos(0,1)
-                this.newPos(0,1)
+            while(move<this.speed*1) {
+                this.newPos(3)
+                this.newPos(3)
                 move +=1;
                 await sleep(200)
             }
@@ -165,8 +169,8 @@ class Player {
     onRight = function(){
         if(playerControl.RIGHT){
             var move = 1;
-            while(move<this.speed && !this.rCollision) {
-                this.newPos(1)
+            while(move<this.speed) {
+                this.newPos(2)
                 move +=1;
             }
         }
@@ -174,8 +178,8 @@ class Player {
     onLeft = function(){
         if(playerControl.LEFT){
             var move = 1;
-            while(move<this.speed && !this.lCollision) {
-                this.newPos(-1)
+            while(move<this.speed) {
+                this.newPos(4)
                 move +=1;
             }
         }
@@ -183,8 +187,8 @@ class Player {
     onUp = function(){
         if(playerControl.UP){
             var move = 1;
-            while(move<this.speed && !this.uCollision) {
-                this.newPos(0,-1)
+            while(move<this.speed) {
+                this.newPos(1)
                 move +=1;
             }
         }
@@ -192,8 +196,8 @@ class Player {
     onDown = function(){
         if(playerControl.DOWN){
             var move = 1;
-            while(move<this.speed && !this.dCollision) {
-                this.newPos(0,1)
+            while(move<this.speed) {
+                this.newPos(3)
                 move +=1;
             }
         }
@@ -204,9 +208,9 @@ class Player {
             if(!this.inAir && !this.jumpPressed) {
                 this.inAir = true
                 this.jumpPressed = true
-                while(move<this.jumpHeightDiv && !this.uCollision) {
+                while(move<this.jumpHeightDiv) {
                     for (var i=0;i<=this.jumpHeightPerDiv;i++) {
-                        this.newPos(0,-1)
+                        this.newPos(1)
                     }
                     move +=1;
                     await sleep(1)
@@ -222,6 +226,10 @@ class Player {
             this.onUp()
             this.onDown()
         }
+    }
+    isDead(){
+        this.isAlive = false
+        console.log("Payer Died")
     }
     characterDraw() {
         var eyePos = this.x
@@ -244,11 +252,11 @@ class Player {
             this.deathAnimCycle +=1;
             eyeSize = [1,0]
             if(this.deathAnimCycle>0 &&this.deathAnimCycle<200){
-                this.ctx.font = 'bold 18px Monospace'
-                this.ctx.fillText('x', eyePos+5, this.y+15)
-                this.ctx.fillText('x', eyePos+25, this.y+15)
-                this.charAlpha -= 0.01;
+                ctx.font = 'bold 18px Monospace'
                 this.fillColor = `rgb(225, 237, 232,${this.charAlpha})`
+                ctx.fillText('x', eyePos+5, this.y+15)
+                ctx.fillText('x', eyePos+25, this.y+15)
+                this.charAlpha -= 0.01;
             }
             else if(this.deathAnimCycle >200){
                 this.x = this.startX
@@ -260,26 +268,199 @@ class Player {
             }
         }
         this.charAnimCycle += 1;
-        this.ctx.lineWidth = 4
-        this.ctx.strokeStyle = this.fillColor
+        ctx.lineWidth = 4
+        ctx.strokeStyle = this.fillColor
         //head
-        this.ctx.strokeRect(this.x, this.y, 40, 25)
-        this.ctx.fillStyle = this.fillColor;
+        ctx.strokeRect(this.x, this.y, 40, 25)
+        ctx.fillStyle = this.fillColor;
         //body
-        this.ctx.fillRect(this.x, this.y+25, 40, 35);
+        ctx.fillRect(this.x, this.y+25, 40, 35);
         //legs
-        this.ctx.fillRect(this.x+5, this.y+60, 10, 20);
-        this.ctx.fillRect(this.x+25, this.y+60, 10, 20);
+        ctx.fillRect(this.x+5, this.y+60, 10, 20);
+        ctx.fillRect(this.x+25, this.y+60, 10, 20);
         //eye
-        this.ctx.beginPath()
-        this.ctx.ellipse(eyePos+10, this.y+10, eyeSize[0], eyeSize[1], Math.PI / 2, 0, 2 * Math.PI);
-        this.ctx.fill()
-        this.ctx.stroke()
-        this.ctx.beginPath()
-        this.ctx.ellipse(eyePos+30, this.y+10,eyeSize[0], eyeSize[1], Math.PI / 2, 0, 2 * Math.PI);
-        this.ctx.fill()
-        this.ctx.stroke()
+        ctx.beginPath()
+        ctx.ellipse(eyePos+10, this.y+10, eyeSize[0], eyeSize[1], Math.PI / 2, 0, 2 * Math.PI);
+        ctx.fill()
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.ellipse(eyePos+30, this.y+10,eyeSize[0], eyeSize[1], Math.PI / 2, 0, 2 * Math.PI);
+        ctx.fill()
+        ctx.stroke()
 
+    }
+}
+class ObjectMaterial {
+    constructor (
+        x=0,y=0,width=50,height=50,name,material=0,fillColor="rgb(225, 237, 232)"
+    ){
+        this.x = x
+        this.name = name
+        this.y = y
+        this.startX = x
+        this.startY = y
+        this.width = width
+        this.height = height
+        this.material = material
+        this.fillColor = fillColor
+        this.collision = [false,false,false,false]
+        this.playerKeyHistory = [false,false,false,false] //LURD
+    }
+    get isColliding(){
+        var c = false
+        for(var i=0;i<4;i++){
+            if(this.collision[i]){
+                c = true
+                break
+            }
+        }
+        return c
+    }
+    storeKeyHistory(){
+        //LURD
+        if(!this.playerKeyHistory[0]){
+            this.playerKeyHistory[0] = playerControl.LEFT
+        }
+        if(!this.playerKeyHistory[1]){
+            this.playerKeyHistory[1] = playerControl.UP || playerControl.JUMP
+        }
+        if(!this.playerKeyHistory[2]){
+            this.playerKeyHistory[2] = playerControl.RIGHT
+        }
+        if(!this.playerKeyHistory[3]){
+            this.playerKeyHistory[3] = playerControl.DOWN || player.gravityAvailabe
+        }
+    }
+    get objYbound(){
+        if(player.y+player.height>this.y && player.y<this.y+this.height){
+            return true
+        }
+        else {
+            false
+        }
+    }
+    get objXbound(){
+        if(player.x+player.width>=this.x && player.x<=this.x+this.width){
+            return true
+        }
+        else {
+            false
+        }
+    }
+    restoreKeyHist(val){
+        var i = 4
+        while(i>=0){
+            if(i!=val){
+                this.playerKeyHistory[i]=false
+            }
+            i--
+        }
+    }
+    objectInit(){
+        this.objectDraw()
+        this.checkCollision()
+    }
+    checkCollision(x=player.x,y=player.y){
+        this.storeKeyHistory()
+        if(!this.isColliding){
+            //console.log(this.playerKeyHistory[0])
+            if(y<=this.y+this.height && y>=this.y && this.playerKeyHistory[1]){
+                //D collision
+                if(x+player.width>=this.x && x<=this.x+this.width){
+                    this.collision[2] = true
+                    //this.collision[0] = false
+                    console.log("collision D ",this.name)
+                    //player.uCollision = true
+                    //player.dCollision = false
+                }
+            }
+            if(this.playerKeyHistory[0] && x<this.x+this.width && x>this.x){
+                if(y+player.height>=this.y+3  && y<=this.y+this.height) {
+                    //R collision
+                    this.collision[1] = true
+                    //this.collision[3] = false
+                    console.log("collision R ",this.name)
+                    //player.lCollision = true
+                    //player.rCollision = false
+                }
+            }
+            else if((this.playerKeyHistory[0] && (this.playerKeyHistory[1] || this.playerKeyHistory[3])) && x<this.x+this.width && x>this.x){
+                this.collision[1] = true
+                    //this.collision[3] = false
+                    console.log("collision R ",this.name)
+            }
+            if(this.playerKeyHistory[2] && x+player.width>this.x && x+player.width<this.x+this.width){
+                if(y+player.height>this.y+3 && y<this.y+this.height) {
+                    //L collision
+                    this.collision[3] = true
+                    //this.collision[1] = false
+                    console.log("collision L ",this.name) 
+                    //player.rCollision = true
+                    //player.lCollision = false
+                }
+            }
+            else if(this.playerKeyHistory[2] && (this.playerKeyHistory[1] || this.playerKeyHistory[3]) && x+player.width>this.x && x+player.width<this.x+this.width){
+                this.collision[3] = true
+                    //this.collision[1] = false
+                    console.log("collision L ",this.name)
+            }
+            if (y+player.height>=this.y &&y+player.height<=this.y+this.height && this.playerKeyHistory[3]){
+                if(x+player.width>=this.x && x<=this.x+this.width){
+                    //player.y = this.y - player.height
+                    //U collision
+                    this.collision[0] = true
+                    //this.collision[2] = false
+                    console.log("collision U ",this.name)
+                    //player.dCollision = true
+                    //player.uCollision = false
+                }
+            }
+        }
+        else {
+            if (y+player.height<=this.y && this.playerKeyHistory[1] || !this.objXbound){
+                //U collision
+                this.collision[0] = false
+                //this.collision[2] = false
+                console.log("decollision U ",this.name)
+                //player.dCollision = true
+                //player.uCollision = false
+            }
+            if(x+player.width<this.x && this.playerKeyHistory[0] || !this.objYbound){
+                //L collision
+                this.collision[3] = false
+                //this.collision[1] = false
+                console.log("decollision L ",this.name) 
+                //player.rCollision = true
+                //player.lCollision = false
+            }
+            if(x>this.x+this.width && this.playerKeyHistory[2] || !this.objYbound){
+                //R collision
+                this.collision[1] = false
+                //this.collision[3] = false
+                console.log("decollision R ",this.name)
+                //player.lCollision = true
+                //player.rCollision = false
+            }
+            if(y>=this.y+this.height && this.playerKeyHistory[3] || !this.objXbound){
+                //D collision
+                this.collision[2] = false
+                console.log("decollision D ",this.name)
+            }
+            player.lCollision = this.collision[1]
+            player.rCollision = this.collision[3]
+            player.dCollision = this.collision[0]
+            player.uCollision = this.collision[2]
+        }
+        
+        this.restoreKeyHist()
+        
+
+    }
+    objectDraw(){
+        ctx.beginPath()
+        //ctx.strokeStyle = this.fillColor
+        ctx.fillStyle = this.fillColor;
+        ctx.fillRect(this.x, this.y, this.width, this.height)
     }
 }
 document.addEventListener("DOMContentLoaded",init)
