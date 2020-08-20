@@ -1,3 +1,4 @@
+var objectCount = 0
 var newGameArea;
 var ctx
 var player;
@@ -76,18 +77,21 @@ class gameArea {
 }
 var testObject
 var testObject2
+var testObject3
 function updateGameArea() {
     newGameArea.clear()
     testObject.objectInit()
     testObject2.objectInit()
+    testObject3.objectInit()
     player.start()
 }
 function init() {
     newGameArea = new gameArea()
     ctx = newGameArea.context
     player = new Player(100,100)
-    testObject = new ObjectMaterial(player.x-50,200,410,250,"first")
-    testObject2 = new ObjectMaterial(player.x+450,440,400,50,"second")
+    testObject = new ObjectMaterial(player.x-50,200,410,150,"first",objectCount++)
+    testObject2 = new ObjectMaterial(player.x+450,440,400,50,"second",objectCount++)
+    testObject3 = new ObjectMaterial(player.x+450,340,40,100,"third",objectCount++)
     document.addEventListener("keydown",playerControlKeyPressed, false);	
 	document.addEventListener("keyup",playerControlKeyReleased, false);
 }
@@ -102,10 +106,10 @@ class Player {
         this.charAlpha = 1;
         this.fillColor = `rgb(225, 237, 232,${this.charAlpha})`
         this.speed = speed
-        this.rCollision = false
-        this.lCollision = false
-        this.uCollision = false
-        this.dCollision = false
+        this.rCollision = [false]
+        this.lCollision = [false]
+        this.uCollision = [false]
+        this.dCollision = [false]
         this.gravityAvailabe = true
         this.jumpHeightDiv = 33 //YEh height control krta hai
         this.jumpHeightPerDiv = 11 //yeh speed control krega
@@ -128,16 +132,16 @@ class Player {
     newPos(val){
         //1,2,3,4 as URDL
         if(this.isAlive){
-            if(val==1 && !this.uCollision){
+            if(val==1 && !this.collisionU){
                 this.y -=1
             }
-            if(val==2 && !this.rCollision){
+            if(val==2 && !this.collisionR){
                 this.x +=1
             }
-            if(val==3 && !this.dCollision){
+            if(val==3 && !this.collisionD){
                 this.y +=1
             }
-            if(val==4 && !this.lCollision){
+            if(val==4 && !this.collisionL){
                 this.x -=1
             }
         }
@@ -153,6 +157,50 @@ class Player {
         if(this.y+this.height >=newGameArea.height){
             this.isDead()
         }
+    }
+    get collisionL(){
+        var len = this.lCollision.length
+        var collision = false
+        for(var i=0;i<len;i++){
+            if(this.lCollision[i]){
+                collision = this.lCollision[i]
+                break
+            }
+        }
+        return collision
+    }
+    get collisionR(){
+        var len = this.rCollision.length
+        var collision = false
+        for(var i=0;i<len;i++){
+            if(this.rCollision[i]){
+                collision = this.rCollision[i]
+                break
+            }
+        }
+        return collision
+    }
+    get collisionU(){
+        var len = this.uCollision.length
+        var collision = false
+        for(var i=0;i<len;i++){
+            if(this.uCollision[i]){
+                collision = this.uCollision[i]
+                break
+            }
+        }
+        return collision
+    }
+    get collisionD(){
+        var len = this.dCollision.length
+        var collision = false
+        for(var i=0;i<len;i++){
+            if(this.dCollision[i]){
+                collision = this.dCollision[i]
+                break
+            }
+        }
+        return collision
     }
     async addGravity() {
         var move = 1;
@@ -292,8 +340,9 @@ class Player {
 }
 class ObjectMaterial {
     constructor (
-        x=0,y=0,width=50,height=50,name,material=0,fillColor="rgb(225, 237, 232)"
+        x=0,y=0,width=50,height=50,name,id=0,material=0,fillColor="rgb(225, 237, 232)"
     ){
+        this.id = id
         this.x = x
         this.name = name
         this.y = y
@@ -390,39 +439,30 @@ class ObjectMaterial {
             }
         }
         else {
-            if (y+player.height<=this.y && this.playerKeyHistory[1] || !this.objXbound){
-                //U collision
-                this.collision[0] = false
-                //this.collision[2] = false
-                console.log("decollision U ",this.name)
-                //player.dCollision = true
-                //player.uCollision = false
-            }
             if(x+player.width<this.x && this.playerKeyHistory[0] || !this.objYbound){
                 //L collision
                 this.collision[3] = false
-                //this.collision[1] = false
                 console.log("decollision L ",this.name) 
-                //player.rCollision = true
-                //player.lCollision = false
             }
             if(x>this.x+this.width && this.playerKeyHistory[2] || !this.objYbound){
                 //R collision
                 this.collision[1] = false
-                //this.collision[3] = false
                 console.log("decollision R ",this.name)
-                //player.lCollision = true
-                //player.rCollision = false
+            }
+            if (y+player.height<=this.y && this.playerKeyHistory[1] || !this.objXbound){
+                //U collision
+                this.collision[0] = false
+                console.log("decollision U ",this.name,this.id)
             }
             if(y>=this.y+this.height && this.playerKeyHistory[3] || !this.objXbound){
                 //D collision
                 this.collision[2] = false
                 console.log("decollision D ",this.name)
             }
-            player.lCollision = this.collision[1]
-            player.rCollision = this.collision[3]
-            player.dCollision = this.collision[0]
-            player.uCollision = this.collision[2]
+            player.lCollision[this.id] = this.collision[1]
+            player.rCollision[this.id] = this.collision[3]
+            player.dCollision[this.id] = this.collision[0]
+            player.uCollision[this.id] = this.collision[2]
         }
         
         this.restoreKeyHist()
