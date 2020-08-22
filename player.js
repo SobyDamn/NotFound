@@ -4,7 +4,6 @@ class Player {
     ) {
         this.x = x
         this.y = y
-        this.gameRatio = newGameArea.resizeRatio
         this.width = Number(width)
         this.height = Number(height)
         this.screenResized = false
@@ -15,7 +14,7 @@ class Player {
         this.lCollision = [false]
         this.uCollision = [false]
         this.dCollision = [false]
-        this.gravityAvailabe = false
+        this.gravityAvailabe = true
         this.jumpHeightDiv = 33 //YEh height control krta hai
         this.jumpHeightPerDiv = 11 //yeh speed control krega
         this.inAir = true
@@ -26,9 +25,6 @@ class Player {
         this.startY = y
         this.characterDraw()
         this.isAlive = true
-        window.addEventListener('resize', ()=>{
-            this.screenResized = true
-        }, false);
     }
     start() {
         //console.log(this.screenW,this.x,this.screenW,this.y,newGameArea.width)
@@ -36,33 +32,21 @@ class Player {
         this.borderCollision()
         this.characterDraw()
         this.attachControls()
-        this.resizeUpdate()
-    }
-    resizeUpdate(){
-        if(this.screenResized){
-            this.screenResized = false
-            this.gameRatio = newGameArea.resizeRatio
-            //this.x *=this.gameRatio
-            //this.y *=this.gameRatio
-            this.height *=this.gameRatio
-            this.width *=this.gameRatio
-            console.log(this.gameRatio)
-        }
     }
     newPos(val){
         //1,2,3,4 as URDL
         if(this.isAlive){
             if(val==1 && !this.collisionU){
-                this.y -=1*this.gameRatio*2
+                this.y -=1
             }
             if(val==2 && !this.collisionR){
-                this.x +=1*this.gameRatio*2
+                this.x +=1
             }
             if(val==3 && !this.collisionD){
-                this.y +=1*this.gameRatio*2
+                this.y +=1
             }
             if(val==4 && !this.collisionL){
-                this.x -=1*this.gameRatio*2
+                this.x -=1
             }
         }
     }
@@ -74,7 +58,7 @@ class Player {
         else {
             this.inAir = true
         }
-        if(this.y+this.height >=newGameArea.height){
+        if((this.y+this.height) >=newGameArea.height){
             this.isDead()
         }
     }
@@ -200,11 +184,10 @@ class Player {
         }
     }
     isDead(){
-        //this.isAlive = false
+        this.isAlive = false
         //console.log("Payer Died")
     }
     characterDraw() {
-        ctx.scale(this.gameRatio,this.gameRatio)
         var eyePos = this.x
         var eyeSize = [5,2]
         var eyeCycle = 800;
@@ -262,13 +245,6 @@ class Player {
         ctx.ellipse(eyePos+30, this.y+10,eyeSize[0], eyeSize[1], Math.PI / 2, 0, 2 * Math.PI);
         ctx.fill()
         ctx.stroke()
-        if(this.screenResized){
-            console.log(this.gameRatio,"h")
-        }
-        //ctx.fillRect(500, 50, 100, 100);
-        ctx.fillRect(500, 50, 100, 100);
-        ctx.fill()
-        ctx.setTransform(1, 0, 0, 1, 0, 0)
 
     }
 }

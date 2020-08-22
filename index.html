@@ -6,13 +6,20 @@
     <script src="object.js"></script>
     <script src="script.js"></script>
     <style>
-        body{
+        #gameArea{
             position:absolute;
             left:50%;
             top:50%;
+            overflow: hidden;
+        }
+        canvas{
+            height: 100%;
+            width: 100%;
         }
     </style>
-    <body style="text-align: center;margin: 0;" id="gameArea">
-        <canvas id="gameAreaCanvas"></canvas>
+    <body style="text-align: center;margin: 0;">
+        <div id="gameArea">
+            <canvas id="gameAreaCanvas"></canvas>
+        </div>
     </body>
 </html>

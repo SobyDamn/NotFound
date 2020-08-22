@@ -83,8 +83,6 @@ class ObjectMaterial {
                     this.nearObjectEffectKey()
                     break
             }
-        
-        
     }
     nonPlatformObjectInit(){
         
