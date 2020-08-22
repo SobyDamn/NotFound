@@ -16,7 +16,6 @@ const sleep = (milliseconds) => {
   }
 function playerControlKeyPressed(event){
     const key = event.key
-    console.log(key)
     if(key == "ArrowRight" || key == "D" || key == "d"){
         playerControl.RIGHT = true
     }
@@ -62,17 +61,20 @@ function playerControlKeyReleased(event){
         playerControl.ENTER = false
     }
 }
+var testObject
+var testObject2
+var testObject3
+var testObject4
 var gameCanvas
-var canvasWidth
-var canvasHeight
 function init() {
     gameCanvas = document.getElementById('gameAreaCanvas')
     newGameArea = new gameArea()
     ctx = newGameArea.context
-    player = new Player(10,70)
+    player = new Player(950,560)
     testObject = new ObjectMaterial(10,640,280,60,"p1",objid++)
-    testObject2 = new ObjectMaterial(490,640,280,60,"p2",objid++)
-    testObject3 = new ObjectMaterial(50,600,40,40,"star",objid++,1)
+    testObject2 = new ObjectMaterial(450,540,280,160,"p2",objid++)
+    testObject3 = new ObjectMaterial(50,550,50,90,"flag",objid++,1)
+    testObject4 = new ObjectMaterial(900,640,280,60,"p3",objid++)
     document.addEventListener("keydown",playerControlKeyPressed, false);	
     document.addEventListener("keyup",playerControlKeyReleased, false);
 }
@@ -126,14 +128,12 @@ class gameArea {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
-var testObject
-var testObject2
-var testObject3
 function updateGameArea() {
     newGameArea.clear()
     testObject.objectInit()
     testObject2.objectInit()
     testObject3.objectInit()
+    testObject4.objectInit()
     player.start()
 }
 

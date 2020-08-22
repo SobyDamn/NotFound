@@ -157,8 +157,24 @@ class ObjectMaterial {
         ctx.stroke();
         ctx.fillStyle='#ffff1c';
         ctx.fill();
-        ctx.restore()
     
+    }
+    keyFlagPoint(){
+        //ObjectMaterial(50,550,50,90,"star",objid++,1)
+        ctx.beginPath()
+        ctx.moveTo(this.x, this.y); 
+        ctx.lineTo(this.x, this.y+this.height);
+        ctx.ellipse(this.x, this.y+5, 2, 2, Math.PI / 2, 0, 2 * Math.PI);
+        ctx.ellipse(this.x, this.y+this.height, 2, 5, Math.PI / 2, 0, 2 * Math.PI);
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = "#ddd";
+        ctx.fillStyle = "#ddd"
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y+10);
+        ctx.lineTo(this.x, this.y+40);
+        ctx.lineTo(this.x+this.width, this.y+25);
+        ctx.fill();
     }
     drawPlatform(){
         ctx.beginPath()
@@ -171,7 +187,7 @@ class ObjectMaterial {
                 this.drawPlatform()
                 break
             case 1:
-                this.keyStarPoint()
+                this.keyFlagPoint()
                 break
         }
         //this.keyStarPoint(200,80,5,20,10)

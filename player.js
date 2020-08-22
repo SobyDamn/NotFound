@@ -61,6 +61,18 @@ class Player {
         if((this.y+this.height) >=newGameArea.height){
             this.isDead()
         }
+        if((this.x) <=5){
+            this.lCollision[objid+1] = true
+        }
+        else {
+            this.lCollision[objid+1] = false
+        }
+        if((this.x+this.width) >newGameArea.width-5){
+            this.rCollision[objid+1] = true
+        }
+        else {
+            this.rCollision[objid+1] = false
+        }
     }
     get collisionL(){
         var len = this.lCollision.length
