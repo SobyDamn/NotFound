@@ -65,6 +65,7 @@ var testObject
 var testObject2
 var testObject3
 var testObject4
+var testObject5
 var gameCanvas
 function init() {
     gameCanvas = document.getElementById('gameAreaCanvas')
@@ -75,6 +76,7 @@ function init() {
     testObject2 = new ObjectMaterial(450,540,280,160,"p2",objid++)
     testObject3 = new ObjectMaterial(50,550,50,90,"flag",objid++,1)
     testObject4 = new ObjectMaterial(900,640,280,60,"p3",objid++)
+    testObject5 = new ObjectMaterial(480,460,100,80,"winningspot",objid++,2)
     document.addEventListener("keydown",playerControlKeyPressed, false);	
     document.addEventListener("keyup",playerControlKeyReleased, false);
 }
@@ -134,6 +136,7 @@ function updateGameArea() {
     testObject2.objectInit()
     testObject3.objectInit()
     testObject4.objectInit()
+    testObject5.objectInit()
     player.start()
     window.requestAnimationFrame(updateGameArea)
 }

@@ -190,6 +190,35 @@ class ObjectMaterial {
         ctx.beginPath()
         ctx.fillStyle = this.fillColor;
         ctx.fillRect(this.x, this.y, this.width, this.height)
+
+    }
+    winningPoint(){
+        /*ctx.lineJoin = "round";
+        ctx.beginPath()
+        ctx.strokeRect(480, 460, 100, 80)
+        ctx.font = 'bold 12px "Lucida Console", Monaco, monospace'
+        ctx.fillText('waiting....', 490, 490)
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.fillRect(480, 520, 100, 20)
+        ctx.beginPath()
+        ctx.fillStyle = "rgb(59, 59, 59)"
+        ctx.ellipse(530, 528, 10, 10, Math.PI / 2, 0, 2 * Math.PI);
+        ctx.fill()
+        ctx.stroke()*/
+        ctx.lineJoin = "round";
+        ctx.beginPath()
+        ctx.strokeRect(this.x, this.y, this.width, this.height)
+        ctx.font = 'bold 12px "Lucida Console", Monaco, monospace'
+        ctx.fillText('waiting....', this.x+10, this.y+30)
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.fillRect(this.x, this.y+(this.height/2)+20, this.width, this.height/4)
+        ctx.beginPath()
+        ctx.fillStyle = "rgb(59, 59, 59)"
+        ctx.ellipse(this.x+this.width/2, this.y+this.height-12, 10, 10, Math.PI / 2, 0, 2 * Math.PI);
+        ctx.fill()
+        ctx.stroke()
     }
     objectDraw(){
         switch(this.material){
@@ -199,8 +228,10 @@ class ObjectMaterial {
             case 1:
                 this.keyFlagPoint()
                 break
+            case 2:
+                this.winningPoint()
+                break
         }
-        //this.keyStarPoint(200,80,5,20,10)
     }
     checkCollision(x=player.x,y=player.y){
         this.storeKeyHistory()
