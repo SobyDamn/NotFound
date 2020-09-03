@@ -118,7 +118,7 @@ class gameArea {
         this.canvas.height = this.height
         this.context = this.canvas.getContext("2d")
         this.context.imageSmoothingEnabled = false
-        this.interval = setInterval(updateGameArea,0.01)
+        //this.interval = setInterval(updateGameArea,0.01)
     }
     clear() {
         if(screenResized){
@@ -135,6 +135,7 @@ function updateGameArea() {
     testObject3.objectInit()
     testObject4.objectInit()
     player.start()
+    window.requestAnimationFrame(updateGameArea)
 }
-
+window.requestAnimationFrame(updateGameArea)
 document.addEventListener("DOMContentLoaded",init)

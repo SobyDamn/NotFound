@@ -1,6 +1,6 @@
 class Player {
     constructor (
-        x=0,y=0,height=80,width=40,speed=3
+        x=0,y=0,height=85,width=40,speed=9
     ) {
         this.x = x
         this.y = y
@@ -122,11 +122,12 @@ class Player {
         var move = 1;
         //playerControl.DOWN = this.gravityAvailabe
         if(this.gravityAvailabe){
-            while(move<this.speed*1) {
-                this.newPos(3)
-                this.newPos(3)
+            while(move<3) {
+                for (var i=0;i<=5;i++) {
+                    this.newPos(3)
+                }
                 move +=1;
-                await sleep(200)
+                await sleep(1)
             }
         }
     }
@@ -202,8 +203,8 @@ class Player {
     characterDraw() {
         var eyePos = this.x
         var eyeSize = [5,2]
-        var eyeCycle = 800;
-        if(this.charAnimCycle >eyeCycle && this.charAnimCycle <eyeCycle+50){
+        var eyeCycle = 200;
+        if(this.charAnimCycle >eyeCycle && this.charAnimCycle <eyeCycle+10){
             eyeSize = [1,0]
             
         }
@@ -219,7 +220,7 @@ class Player {
         if(!this.isAlive){
             this.deathAnimCycle +=1;
             eyeSize = [1,0]
-            if(this.deathAnimCycle>0 &&this.deathAnimCycle<200){
+            if(this.deathAnimCycle>0 &&this.deathAnimCycle<50){
                 ctx.beginPath()
                 ctx.font = 'bold 18px Monospace'
                 this.fillColor = `rgb(225, 237, 232,${this.charAlpha})`
@@ -228,7 +229,7 @@ class Player {
                 ctx.fillText('x', eyePos+25, this.y+15)
                 this.charAlpha -= 0.01;
             }
-            else if(this.deathAnimCycle >200){
+            else if(this.deathAnimCycle >50){
                 this.x = this.startX
                 this.y = this.startY
                 this.deathAnimCycle = 0

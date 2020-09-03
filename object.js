@@ -19,6 +19,8 @@ class ObjectMaterial {
         this.objectAnimeCycleEnd = true
         this.keyShown = false
         this.key = -1
+        this.flagTouched = false
+        this.flagYpos = this.y
     }
     get isColliding(){
         var c = false
@@ -98,12 +100,12 @@ class ObjectMaterial {
                 this.keyShown = false
             }
             else {
+                this.flagTouched = true
                 if(!this.keyShown){
                     this.key = Math.floor(Math.random() * 10)
                     this.keyShown = true
                 }
                 ctx.fillText(this.key, this.x-5, this.y-50)
-                this.objectAnimeCycle = -100
             }
         }
     }
@@ -161,6 +163,13 @@ class ObjectMaterial {
     }
     keyFlagPoint(){
         //ObjectMaterial(50,550,50,90,"star",objid++,1)
+        if(this.flagTouched){
+            if(this.objectAnimeCycle<this.height-40){
+                this.flagYpos += 1
+                this.objectAnimeCycle++
+                console.log(this.objectAnimeCycle)
+            }
+        }
         ctx.beginPath()
         ctx.moveTo(this.x, this.y); 
         ctx.lineTo(this.x, this.y+this.height);
@@ -170,10 +179,11 @@ class ObjectMaterial {
         ctx.strokeStyle = "#ddd";
         ctx.fillStyle = "#ddd"
         ctx.stroke();
+        //flag triangle
         ctx.beginPath();
-        ctx.moveTo(this.x, this.y+10);
-        ctx.lineTo(this.x, this.y+40);
-        ctx.lineTo(this.x+this.width, this.y+25);
+        ctx.moveTo(this.x, this.flagYpos+10);
+        ctx.lineTo(this.x, this.flagYpos+40);
+        ctx.lineTo(this.x+this.width, this.flagYpos+25);
         ctx.fill();
     }
     drawPlatform(){
@@ -196,28 +206,29 @@ class ObjectMaterial {
         this.storeKeyHistory()
         if(!this.isColliding){
             //console.log(this.playerKeyHistory[0])
-            if(y+player.height>=this.y+3 && y<=this.y+this.height) {
+            if(y+player.height>=this.y+10 && y<=this.y+this.height) {
                 if(this.playerKeyHistory[2] && x+player.width>this.x && x+player.width<this.x+this.width){
                     //L collision
                     this.collision[3] = true
-                    //console.log("collision L ",this.name) 
+                    console.log("collision L ",this.name) 
                 }
                 if(this.playerKeyHistory[0] && x<this.x+this.width && x>this.x){
                     //R collision
                     this.collision[1] = true
-                    //console.log("collision R ",this.name)
+                    console.log("collision R ",this.name)
                 }
             }
-            else if(x+player.width>=this.x && x<=this.x+this.width){
+            if(x+player.width>=this.x && x<=this.x+this.width){
                 if(y<=this.y+this.height && y>=this.y && this.playerKeyHistory[1]){
                     //D collision
                     this.collision[2] = true
-                    //console.log("collision D ",this.name)
+                    console.log("collision D ",this.name)
                 }
                 if (y+player.height>=this.y &&y+player.height<=this.y+this.height && this.playerKeyHistory[3]){
                     //U collision
+                    player.y = this.y - (player.height)
                     this.collision[0] = true
-                    //console.log("collision U ",this.name)
+                    console.log("collision U ",this.name)
                 }
             }
         }
@@ -225,29 +236,28 @@ class ObjectMaterial {
             if(x+player.width<this.x && this.playerKeyHistory[0] || !this.objYbound){
                 //L collision
                 this.collision[3] = false
-                //console.log("decollision L ",this.name) 
+                console.log("decollision L ",this.name) 
             }
             if(x>this.x+this.width && this.playerKeyHistory[2] || !this.objYbound){
                 //R collision
                 this.collision[1] = false
-                //console.log("decollision R ",this.name)
+                console.log("decollision R ",this.name)
             }
             if (y+player.height<=this.y && this.playerKeyHistory[1] || !this.objXbound){
                 //U collision
                 this.collision[0] = false
-                //console.log("decollision U ",this.name,this.id)
+                console.log("decollision U ",this.name,this.id)
             }
             if(y>=this.y+this.height && this.playerKeyHistory[3] || !this.objXbound){
                 //D collision
                 this.collision[2] = false
-                //console.log("decollision D ",this.name)
+                console.log("decollision D ",this.name)
             }
             player.lCollision[this.id] = this.collision[1]
             player.rCollision[this.id] = this.collision[3]
             player.dCollision[this.id] = this.collision[0]
             player.uCollision[this.id] = this.collision[2]
         }
-        
         this.restoreKeyHist()
     }
 }
