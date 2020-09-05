@@ -21,6 +21,7 @@ class ObjectMaterial {
         this.key = -1
         this.flagTouched = false
         this.flagYpos = this.y
+        this.enteredKey = []
     }
     get isColliding(){
         var c = false
@@ -47,7 +48,7 @@ class ObjectMaterial {
             this.playerKeyHistory[3] = playerControl.DOWN || player.gravityAvailabe
         }
     }
-    get objYbound(){
+    objYbound(val){
         if(player.y+player.height>this.y && player.y<this.y+this.height){
             return true
         }
@@ -55,16 +56,16 @@ class ObjectMaterial {
             false
         }
     }
-    get objXbound(){
-        if(player.x+player.width>=this.x && player.x<=this.x+this.width){
+    objXbound(val){
+        if(player.x+player.width>=this.x - val && player.x<=this.x+this.width + val){
             return true
         }
         else {
             false
         }
     }
-    actualCollision(){
-        return this.objXbound && this.objYbound
+    actualCollision(x=0){
+        return this.objXbound(x) && this.objYbound(x)
     }
     restoreKeyHist(val){
         var i = 4
@@ -84,6 +85,9 @@ class ObjectMaterial {
                 case 1:
                     this.nearObjectEffectKey()
                     break
+                case 2:
+                    this.nearObjectEffectFinishPoint()
+                    break
             }
     }
     nonPlatformObjectInit(){
@@ -96,7 +100,7 @@ class ObjectMaterial {
             this.fillColor = `#42f5a1`
             ctx.fillStyle = this.fillColor
             if(!playerControl.ENTER){
-                ctx.fillText('Press Enter!', this.x-40, this.y-50)
+                ctx.fillText('Press Enter!', this.x, this.y-50)
                 this.keyShown = false
             }
             else {
@@ -105,12 +109,77 @@ class ObjectMaterial {
                     this.key = Math.floor(Math.random() * 10)
                     this.keyShown = true
                 }
-                ctx.fillText(this.key, this.x-5, this.y-50)
+                ctx.fillText(this.key, this.x, this.y-50)
             }
         }
     }
     nearObjectEffectFinishPoint(){
-
+        if(this.actualCollision(30)){
+            document.addEventListener("keydown",this.winningPointKeyInput, false);
+            document.Object = this
+            ctx.beginPath()
+            ctx.font = 'bold 15px "Comic Sans MS", cursive, sans-serif'
+            //this.fillColor = `#42f5a1`
+            ctx.fillStyle = this.fillColor
+            ctx.beginPath();
+            ctx.lineWidth = 3
+            ctx.moveTo(this.x+20, this.y+45);
+            ctx.lineTo(this.x+80, this.y+45);
+            ctx.fillText('***', this.x+50, this.y+25)
+            ctx.fillText(this.enteredKeyVal, this.x+50, this.y+40)
+            ctx.stroke();
+            if(!playerControl.ENTER){
+                ctx.fillText('Enter the codes', this.x+this.width/2, this.y-50)
+            }
+            else {
+                ctx.fillText('Next Level', this.x+this.width/2, this.y-50)
+            }
+        }
+        else {
+            document.removeEventListener("keydown",this.winningPointKeyInput, false);
+            ctx.fillStyle = "rgb(225, 237, 232)"
+            ctx.font = 'bold 12px "Lucida Console", Monaco, monospace'
+            ++this.objectAnimeCycle
+            if(this.objectAnimeCycle>50 && this.objectAnimeCycle<100){
+                ctx.fillText('waiting..', this.x+50, this.y+30)
+            }
+            else if(this.objectAnimeCycle>=100 && this.objectAnimeCycle<150) {
+                ctx.fillText('waiting...', this.x+50, this.y+30)
+            }
+            else {
+                ctx.fillText('waiting....', this.x+50, this.y+30)
+            }
+            if (this.objectAnimeCycle>150){
+                this.objectAnimeCycle=0
+            }
+        }
+    }
+    winningPointKeyInput(event){
+        const key = event.key
+        const keyPas = parseInt(key)
+        const object = event.currentTarget.Object
+        if (Number.isInteger(keyPas) && object.enteredKey.length <4){
+            object.enteredKey.push(keyPas)
+            console.log(key,"int")
+        }
+        else if(key == "Backspace"){
+            object.enteredKey.pop()
+        }
+        else if(key == "Enter"){
+            console.log("enter")
+        }
+    }
+    get enteredKeyVal() {
+        var str = ""
+        for(var i=0;i<this.enteredKey.length;i++){
+            if(i==this.enteredKey.length-1){
+                str += this.enteredKey[i]
+            }
+            else {
+                str += this.enteredKey[i]+" "
+            }
+        }
+        return str
     }
     nearObjectEffectDeath(){
         if(this.actualCollision()){
@@ -209,9 +278,8 @@ class ObjectMaterial {
         ctx.lineJoin = "round";
         ctx.beginPath()
         ctx.strokeRect(this.x, this.y, this.width, this.height)
-        ctx.font = 'bold 12px "Lucida Console", Monaco, monospace'
-        ctx.fillText('waiting....', this.x+10, this.y+30)
         ctx.stroke()
+        ctx.textAlign = 'center';
         ctx.beginPath()
         ctx.fillRect(this.x, this.y+(this.height/2)+20, this.width, this.height/4)
         ctx.beginPath()
