@@ -1,6 +1,6 @@
 class Player {
     constructor (
-        x=0,y=0,height=85,width=40,speed=9
+        x=0,y=0,height=85,width=40,speed=8
     ) {
         this.x = x
         this.y = y
@@ -15,8 +15,8 @@ class Player {
         this.uCollision = [false]
         this.dCollision = [false]
         this.gravityAvailabe = true
-        this.jumpHeightDiv = 33 //YEh height control krta hai
-        this.jumpHeightPerDiv = 11 //yeh speed control krega
+        this.jumpHeight = 30
+        this.jumpSpeed = 14
         this.inAir = true
         this.jumpPressed = false
         this.charAnimCycle = 0;
@@ -33,26 +33,26 @@ class Player {
         this.characterDraw()
         this.attachControls()
     }
-    newPos(val){
+    newPos(val,speed=1){
         //1,2,3,4 as URDL
         if(this.isAlive){
             if(val==1 && !this.collisionU){
-                this.y -=1
+                this.y -=speed
             }
             if(val==2 && !this.collisionR){
-                this.x +=1
+                this.x +=speed
             }
             if(val==3 && !this.collisionD){
-                this.y +=1
+                this.y +=speed
             }
             if(val==4 && !this.collisionL){
-                this.x -=1
+                this.x -=speed
             }
         }
     }
 
     borderCollision() {
-        if (this.dCollision){
+        if (this.collisionD){
             this.inAir = false
         }
         else {
@@ -118,56 +118,33 @@ class Player {
         }
         return collision
     }
-    async addGravity() {
-        var move = 1;
+    addGravity() {
         //playerControl.DOWN = this.gravityAvailabe
         if(this.gravityAvailabe){
-            while(move<3) {
-                for (var i=0;i<=5;i++) {
-                    this.newPos(3)
-                }
-                move +=1;
-                await sleep(1)
-            }
+            this.newPos(3,this.speed*1.75)
         }
     }
     onRight = function(){
         if(playerControl.RIGHT){
-            var move = 1;
-            while(move<this.speed) {
-                this.newPos(2)
-                move +=1;
-            }
+            this.newPos(2,this.speed)
         }
     }
     onLeft = function(){
         if(playerControl.LEFT){
-            var move = 1;
-            while(move<this.speed) {
-                this.newPos(4)
-                move +=1;
-            }
+            this.newPos(4,this.speed)
         }
     }
     onUp = function(){
         if(!this.gravityAvailabe){
             if(playerControl.UP){
-                var move = 1;
-                while(move<this.speed) {
-                    this.newPos(1)
-                    move +=1;
-                }
+                this.newPos(1,this.speed)
             }
         }
     }
     onDown = function(){
         if(!this.gravityAvailabe){
             if(playerControl.DOWN){
-                var move = 1;
-                while(move<this.speed) {
-                    this.newPos(3)
-                    move +=1;
-                }
+                this.newPos(3,this.speed)
             }
         }
     }
@@ -177,10 +154,8 @@ class Player {
             if(!this.inAir && !this.jumpPressed && this.collisionD) {
                 this.inAir = true
                 this.jumpPressed = true
-                while(move<this.jumpHeightDiv) {
-                    for (var i=0;i<=this.jumpHeightPerDiv;i++) {
-                        this.newPos(1)
-                    }
+                while(move<this.jumpHeight) {
+                    this.newPos(1,this.jumpSpeed)
                     move +=1;
                     await sleep(1)
                 }
@@ -225,8 +200,8 @@ class Player {
                 ctx.font = 'bold 18px Monospace'
                 this.fillColor = `rgb(225, 237, 232,${this.charAlpha})`
                 ctx.fillStyle = this.fillColor
-                ctx.fillText('x', eyePos+5, this.y+15)
-                ctx.fillText('x', eyePos+25, this.y+15)
+                ctx.fillText('x', eyePos+10, this.y+15)
+                ctx.fillText('x', eyePos+30, this.y+15)
                 this.charAlpha -= 0.01;
             }
             else if(this.deathAnimCycle >50){
