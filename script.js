@@ -71,12 +71,15 @@ function init() {
     gameCanvas = document.getElementById('gameAreaCanvas')
     newGameArea = new gameArea()
     ctx = newGameArea.context
-    player = new Player(950,560)
-    testObject = new ObjectMaterial(10,640,280,60,"p1",objid++)
-    testObject2 = new ObjectMaterial(450,540,280,160,"p2",objid++)
-    testObject3 = new ObjectMaterial(50,550,50,90,"flag",objid++,1)
-    testObject4 = new ObjectMaterial(900,640,280,60,"p3",objid++)
-    testObject5 = new ObjectMaterial(480,460,100,80,"winningspot",objid++,2)
+    /*testObject = new ObjectMaterial(10,640,280,60,"p1",0,objid++)
+    testObject2 = new ObjectMaterial(450,540,280,160,"p2",0,objid++)
+    testObject3 = new ObjectMaterial(50,550,50,90,"flag",1,objid++)
+    testObject4 = new ObjectMaterial(900,640,280,60,"p3",0,objid++)
+    testObject5 = new ObjectMaterial(480,460,100,80,"winningspot",2,objid++)
+    var objects = [testObject,testObject2,testObject3,testObject4,testObject5]
+    level = new gameLevel(950,560,objects,player)*/
+    level = LevelGenerator()
+    window.requestAnimationFrame(updateGameArea)
     document.addEventListener("keydown",playerControlKeyPressed, false);	
     document.addEventListener("keyup",playerControlKeyReleased, false);
 }
@@ -132,13 +135,8 @@ class gameArea {
 }
 function updateGameArea() {
     newGameArea.clear()
-    testObject.objectInit()
-    testObject2.objectInit()
-    testObject3.objectInit()
-    testObject4.objectInit()
-    testObject5.objectInit()
+    level.playLevel()
     player.start()
     window.requestAnimationFrame(updateGameArea)
 }
-window.requestAnimationFrame(updateGameArea)
 document.addEventListener("DOMContentLoaded",init)

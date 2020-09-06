@@ -1,6 +1,6 @@
 class ObjectMaterial {
     constructor (
-        x=0,y=0,width=50,height=50,name,id=0,material=0,fillColor="rgb(225, 237, 232)"
+        x=0,y=0,width=50,height=50,name,material=0,id=0,fillColor="rgb(225, 237, 232)"
     ){
         this.id = id
         this.x = x
@@ -17,11 +17,13 @@ class ObjectMaterial {
         this.objectAnimeCycle = 0
         this.objectAnimeCycleStart = false
         this.objectAnimeCycleEnd = true
-        this.keyShown = false
-        this.key = -1
+        this.key = Math.floor(Math.random() * 10)
         this.flagTouched = false
         this.flagYpos = this.y
         this.enteredKey = [] //for key entered in winning point
+        this.winningPointText = "Waiting"
+        this.requestNextLevel = false
+        this.requestNextLevelFailed = false
     }
     objectInit(){
         this.objectDraw()
@@ -36,6 +38,7 @@ class ObjectMaterial {
                     this.nearObjectEffectFinishPoint()
                     break
             }
+        //window.requestAnimationFrame(this.objectInit(obj))
     }
     nonPlatformObjectInit(){
         
@@ -48,21 +51,21 @@ class ObjectMaterial {
             ctx.fillStyle = this.fillColor
             if(!playerControl.ENTER){
                 ctx.fillText('Press Enter!', this.x, this.y-50)
-                this.keyShown = false
+                ctx.fill()
             }
             else {
-                this.flagTouched = true
-                if(!this.keyShown){
-                    this.key = Math.floor(Math.random() * 10)
-                    this.keyShown = true
+                if(!this.flagTouched){
+                    level.nextLevelKey.push(this.key)
+                    this.flagTouched = true
                 }
                 ctx.fillText(this.key, this.x, this.y-50)
+                ctx.fill()
             }
         }
     }
     nearObjectEffectFinishPoint(){
         ctx.beginPath()
-        if(this.actualCollision(30)){
+        if(this.actualCollision(30) && !this.requestNextLevel){
             document.addEventListener("keydown",this.winningPointKeyInput, false);
             document.Object = this
             ctx.beginPath()
@@ -76,12 +79,37 @@ class ObjectMaterial {
             ctx.fillText('***', this.x+50, this.y+25)
             ctx.fillText(this.enteredKeyVal, this.x+50, this.y+40)
             ctx.stroke();
-            if(!playerControl.ENTER){
-                ctx.fillText('Enter the codes', this.x+this.width/2, this.y-50)
+            ctx.fillText('Enter the codes', this.x+this.width/2, this.y-50)
+            if(playerControl.ENTER){
+                console.log("enter",this.enteredKey,level.nextLevelKey)
+                if (this.enteredKey.length !=0 && level.nextLevelKey.length!=0 && !this.requestNextLevel){
+                    this.requestNextLevel = true
+                    this.winningPointText = "Fetching"
+                    if(JSON.stringify(this.enteredKey)==JSON.stringify(level.nextLevelKey)){
+                        console.log("yes")
+                        setTimeout(()=>{
+                            this.winningPointText = "Loading"
+                            setTimeout(()=>{
+                                console.log("load next level")
+                                level = LevelGenerator(level.nextLevel)
+                            },1000)
+                        },1000)
+                    }
+                    else{
+                        setTimeout(()=>{
+                            this.requestNextLevelFailed = true
+                            setTimeout(()=>{
+                                level = LevelGenerator(level.name)
+                                console.log("load level again")
+                            },1000)
+                        },1000)
+                        console.log("no")
+                    }
+                }
             }
-            else {
-                ctx.fillText('Next Level', this.x+this.width/2, this.y-50)
-            }
+            /*else {
+                ctx.fillText('Fetching...', this.x+this.width/2, this.y-50)
+            }*/
             ctx.fill()
             ctx.stroke()
         }
@@ -89,18 +117,23 @@ class ObjectMaterial {
             document.removeEventListener("keydown",this.winningPointKeyInput, false);
             ctx.fillStyle = "rgb(225, 237, 232)"
             ctx.font = 'bold 12px "Lucida Console", Monaco, monospace'
-            ++this.objectAnimeCycle
-            if(this.objectAnimeCycle>50 && this.objectAnimeCycle<100){
-                ctx.fillText('waiting..', this.x+50, this.y+30)
+            if(!this.requestNextLevelFailed){
+                ++this.objectAnimeCycle
+                if(this.objectAnimeCycle>50 && this.objectAnimeCycle<100){
+                    ctx.fillText(`${this.winningPointText}..`, this.x+50, this.y+30)
+                }
+                else if(this.objectAnimeCycle>=100 && this.objectAnimeCycle<150) {
+                    ctx.fillText(`${this.winningPointText}...`, this.x+50, this.y+30)
+                }
+                else {
+                    ctx.fillText(`${this.winningPointText}....`, this.x+50, this.y+30)
+                }
+                if (this.objectAnimeCycle>150){
+                    this.objectAnimeCycle=0
+                }
             }
-            else if(this.objectAnimeCycle>=100 && this.objectAnimeCycle<150) {
-                ctx.fillText('waiting...', this.x+50, this.y+30)
-            }
-            else {
-                ctx.fillText('waiting....', this.x+50, this.y+30)
-            }
-            if (this.objectAnimeCycle>150){
-                this.objectAnimeCycle=0
+            else{
+                ctx.fillText(`Not Found!`, this.x+50, this.y+30)
             }
             ctx.fill()
             ctx.stroke()
@@ -116,9 +149,6 @@ class ObjectMaterial {
         }
         else if(key == "Backspace"){
             object.enteredKey.pop()
-        }
-        else if(key == "Enter"){
-            console.log("enter")
         }
     }
     get enteredKeyVal() {
@@ -188,7 +218,6 @@ class ObjectMaterial {
             if(this.objectAnimeCycle<this.height-40){
                 this.flagYpos += 1
                 this.objectAnimeCycle++
-                console.log(this.objectAnimeCycle)
             }
         }
         ctx.beginPath()
@@ -240,6 +269,7 @@ class ObjectMaterial {
         ctx.beginPath()
         ctx.lineJoin = "round";
         ctx.strokeStyle = this.fillColor
+        ctx.fillStyle = "#ddd"
         ctx.lineWidth = 8
         ctx.strokeRect(this.x, this.y, this.width, this.height)
         ctx.stroke()

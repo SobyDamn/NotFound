@@ -205,8 +205,9 @@ class Player {
                 this.charAlpha -= 0.01;
             }
             else if(this.deathAnimCycle >50){
-                this.x = this.startX
-                this.y = this.startY
+                /*this.x = this.startX
+                this.y = this.startY*/
+                level.start()
                 this.deathAnimCycle = 0
                 this.isAlive = true
                 this.charAlpha = 1
