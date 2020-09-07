@@ -10,12 +10,31 @@ var levels = {
         startX:100,
         startY:415,
         Objects:{
-            p1:{
+            floor:{
                 x:0,
                 y:500,
                 width:1300,
                 height:200,
-                material:0
+                material:0,
+                moving:false,
+                startX:0,
+                startY:0,
+                endX:0,
+                endY:0,
+                mSpeed:0,
+            },
+            p2:{
+                x:300,
+                y:450,
+                width:50,
+                height:50,
+                material:0,
+                moving:true,
+                startX:300,
+                startY:450,
+                endX:900,
+                endY:450,
+                mSpeed:10,
             },
             flag:{
                 x:50,
@@ -88,7 +107,7 @@ function LevelGenerator(level="level0"){
     var startY = levels[level].startY
     var Objects = levels[level].Objects
     for (object in Objects){
-        var objectGen = new ObjectMaterial(Objects[object].x,Objects[object].y,Objects[object].width,Objects[object].height,object,Objects[object].material,object_id++)
+        var objectGen = new ObjectMaterial(Objects[object].x,Objects[object].y,Objects[object].width,Objects[object].height,object,Objects[object].material,object_id++,Objects[object].moving,Objects[object].startX,Objects[object].startY,Objects[object].endX,Objects[object].endY,Objects[object].mSpeed)
         objectArr.push(objectGen)
         console.log(object)
     }

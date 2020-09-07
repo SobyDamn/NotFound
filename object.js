@@ -1,22 +1,25 @@
 class ObjectMaterial {
     constructor (
-        x=0,y=0,width=50,height=50,name,material=0,id=0,fillColor="rgb(225, 237, 232)"
+        x=0,y=0,width=50,height=50,name,material=0,id=0,moving=false,startX=null,startY=null,endX=null,endY=null,mSpeed=0,changing=false,fillColor="rgb(225, 237, 232)"
     ){
         this.id = id
         this.x = x
         this.name = name
         this.y = y
-        this.startX = x
-        this.startY = y
+        this.isMoving = moving
+        this.startX = startX
+        this.startY = startY
+        this.endX = endX
+        this.endY = endY
+        this.mSpeed = mSpeed
         this.width = width
         this.height = height
         this.material = material
         this.fillColor = fillColor
         this.collision = [false,false,false,false] //URDL
         this.playerKeyHistory = [false,false,false,false] //LURD
-        this.objectAnimeCycle = 0
+        this.objectAnimeCycle = startX - 1
         this.objectAnimeCycleStart = false
-        this.objectAnimeCycleEnd = true
         this.key = Math.floor(Math.random() * 10)
         this.flagTouched = false
         this.flagYpos = this.y
@@ -38,7 +41,6 @@ class ObjectMaterial {
                     this.nearObjectEffectFinishPoint()
                     break
             }
-        //window.requestAnimationFrame(this.objectInit(obj))
     }
     nonPlatformObjectInit(){
         
@@ -55,6 +57,7 @@ class ObjectMaterial {
             }
             else {
                 if(!this.flagTouched){
+                    playString("flag")
                     level.nextLevelKey.push(this.key)
                     this.flagTouched = true
                 }
@@ -107,9 +110,6 @@ class ObjectMaterial {
                     }
                 }
             }
-            /*else {
-                ctx.fillText('Fetching...', this.x+this.width/2, this.y-50)
-            }*/
             ctx.fill()
             ctx.stroke()
         }
@@ -145,7 +145,8 @@ class ObjectMaterial {
         const object = event.currentTarget.Object
         if (Number.isInteger(keyPas) && object.enteredKey.length <4){
             object.enteredKey.push(keyPas)
-            console.log(key,"int")
+            console.log("h")
+            playString("keyPress")
         }
         else if(key == "Backspace"){
             object.enteredKey.pop()
@@ -167,50 +168,6 @@ class ObjectMaterial {
         if(this.actualCollision()){
             player.isDead()
         }
-    }
-    animeCycle(val=200,i=1){
-        if(!this.objectAnimeCycleStart){
-            ++this.objectAnimeCycle
-        }
-        else {
-            --this.objectAnimeCycle
-        }
-        if(this.objectAnimeCycle <1){
-            this.objectAnimeCycleStart = false
-        }
-        else if(this.objectAnimeCycle>=val){
-            this.objectAnimeCycleStart = true
-        }
-        return this.objectAnimeCycle
-    }
-    keyStarPoint(spikes=5, outerRadius=this.width/2, innerRadius=this.width/4) {
-        //outerradius is double of height or width
-        //innerradius is half of outerradius
-        var rot = Math.PI / 2 * 3;
-        var x = this.x;
-        var y = this.y;
-        var step = Math.PI / spikes;
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y - outerRadius)
-        for (var i = 0; i < spikes; i++) {
-            x = this.x + Math.cos(rot) * outerRadius;
-            y = this.y + Math.sin(rot) * outerRadius;
-            ctx.lineTo(x, y)
-            rot += step
-    
-            x = this.x + Math.cos(rot) * innerRadius;
-            y = this.y + Math.sin(rot) * innerRadius;
-            ctx.lineTo(x, y)
-            rot += step
-        }
-        ctx.lineTo(this.x, this.y - outerRadius)
-        ctx.closePath();
-        ctx.lineWidth = this.animeCycle(200,5)/100
-        ctx.strokeStyle='#ffe11c';
-        ctx.stroke();
-        ctx.fillStyle='#ffff1c';
-        ctx.fill();
-    
     }
     keyFlagPoint(){
         //ObjectMaterial(50,550,50,90,"star",objid++,1)
@@ -236,7 +193,30 @@ class ObjectMaterial {
         ctx.lineTo(this.x+this.width, this.flagYpos+25);
         ctx.fill();
     }
+    checkMoving(){
+        if(this.isMoving){
+            if(!this.objectAnimeCycleStart){
+                this.x +=this.mSpeed
+            }
+            else {
+                this.x -=this.mSpeed
+            }
+            if(!this.objectAnimeCycleStart){
+                this.objectAnimeCycle +=this.mSpeed
+            }
+            else {
+                this.objectAnimeCycle-=this.mSpeed
+            }
+            if(this.objectAnimeCycle <this.startX){
+                this.objectAnimeCycleStart = false
+            }
+            else if(this.objectAnimeCycle>=this.endX){
+                this.objectAnimeCycleStart = true
+            }
+        }
+    }
     drawPlatform(){
+        this.checkMoving()
         ctx.beginPath()
         ctx.fillStyle = this.fillColor;
         ctx.fillRect(this.x, this.y, this.width, this.height)
@@ -253,19 +233,6 @@ class ObjectMaterial {
 
     }
     winningPoint(){
-        /*ctx.lineJoin = "round";
-        ctx.beginPath()
-        ctx.strokeRect(480, 460, 100, 80)
-        ctx.font = 'bold 12px "Lucida Console", Monaco, monospace'
-        ctx.fillText('waiting....', 490, 490)
-        ctx.stroke()
-        ctx.beginPath()
-        ctx.fillRect(480, 520, 100, 20)
-        ctx.beginPath()
-        ctx.fillStyle = "rgb(59, 59, 59)"
-        ctx.ellipse(530, 528, 10, 10, Math.PI / 2, 0, 2 * Math.PI);
-        ctx.fill()
-        ctx.stroke()*/
         ctx.beginPath()
         ctx.lineJoin = "round";
         ctx.strokeStyle = this.fillColor
@@ -308,13 +275,23 @@ class ObjectMaterial {
     storeKeyHistory(){
         //LURD
         if(!this.playerKeyHistory[0]){
-            this.playerKeyHistory[0] = playerControl.LEFT
+            if(this.isMoving){
+                this.playerKeyHistory[0] = playerControl.LEFT || !this.objectAnimeCycleStart
+            }
+            else {
+                this.playerKeyHistory[0] = playerControl.LEFT
+            }
         }
         if(!this.playerKeyHistory[1]){
             this.playerKeyHistory[1] = playerControl.UP || playerControl.JUMP
         }
         if(!this.playerKeyHistory[2]){
-            this.playerKeyHistory[2] = playerControl.RIGHT
+            if(this.isMoving){
+                this.playerKeyHistory[2] = playerControl.RIGHT || this.objectAnimeCycleStart
+            }
+            else {
+                this.playerKeyHistory[2] = playerControl.RIGHT
+            }
         }
         if(!this.playerKeyHistory[3]){
             this.playerKeyHistory[3] = playerControl.DOWN || player.gravityAvailabe
@@ -350,9 +327,7 @@ class ObjectMaterial {
     }
     checkCollision(x=player.x,y=player.y){
         this.storeKeyHistory()
-        if(!this.isColliding){
-            //console.log("colliding")
-            //console.log(this.playerKeyHistory[0])
+        if(!this.isColliding &&player.isAlive){
             //if not colliding check for collision
             if(x+player.width>=this.x && x<=this.x+this.width){
                 if(y<=this.y+this.height && y>=this.y && this.playerKeyHistory[1]){
@@ -371,7 +346,7 @@ class ObjectMaterial {
                 }
                 if(this.playerKeyHistory[2] && x+player.width>this.x && x+player.width<this.x+this.width){
                     //L collision
-                    this.collision[3] = true
+                    //this.collision[3] = true
                     //killing the player if touched right or left
                     player.isDead()
                     console.log("collision L ",this.name) 
@@ -380,7 +355,7 @@ class ObjectMaterial {
                     //R collision
                     //killing the player if touched right or left
                     player.isDead()
-                    this.collision[1] = true
+                    //this.collision[1] = true
                     console.log("collision R ",this.name)
                 }
             }
@@ -413,9 +388,14 @@ class ObjectMaterial {
             player.uCollision[this.id] = this.collision[2]
         }
         this.restoreKeyHist()
+        if(!player.isAlive){
+            for(var i=0;i<4;i++){
+                this.collision[i] = false
+            }
+        }
         //making players leg on ground if inside
-        if (player.dCollision[this.id]){
-            if (y+player.height>this.y && y+player.height<this.y+30){
+        if (player.dCollision[this.id] && player.isAlive){
+            if (y+player.height>this.y){
                 player.y = this.y - player.height + player.speed
             }
         }

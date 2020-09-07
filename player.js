@@ -172,8 +172,11 @@ class Player {
         }
     }
     isDead(){
-        this.isAlive = false
-        //console.log("Payer Died")
+        if (this.isAlive){
+            this.isAlive = false
+            console.log("Payer Died")
+            playString()
+        }
     }
     characterDraw() {
         var eyePos = this.x

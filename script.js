@@ -140,3 +140,41 @@ function updateGameArea() {
     window.requestAnimationFrame(updateGameArea)
 }
 document.addEventListener("DOMContentLoaded",init)
+function playSound(params) {
+    var url = window.URL || window.webkitURL;
+    try {
+        var soundURL = jsfxr(params);
+        var player = new Audio();
+        player.addEventListener('error', function(e) {
+        console.log("Error: " + player.error.code);
+        }, false);
+        player.src = soundURL;
+        player.play();
+        player.addEventListener('ended', function(e) {
+        url.revokeObjectURL(soundURL);
+        }, false);
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+function playString(name="death") {
+    var str
+    var flagTouch = "[0,,0.0154,0.538,0.329,0.5342,,,,,,0.4599,0.6024,,,,,,1,,,,,0.52]"
+    if (name =="death"){
+        str = "[1,,0.0404,,0.2501,0.6364,,-0.4971,,,,,,,,,,,1,,,0.2928,,0.5]"
+    }
+    else if(name == "keyPress"){
+        str = "[0,,0.0185,0.5339,0.1614,0.28,0.16,,,,,,,,,,,,1,,,,,0.52]"
+    }
+    else if(name=="flag"){
+        str = flagTouch
+    }
+    var temp = str.split(",");
+    var params = new Array();
+    for(var i = 0; i < temp.length; i++) {
+        params[i] = parseFloat(temp[i]);
+    }
+    console.log(params)
+    playSound(params);
+}
