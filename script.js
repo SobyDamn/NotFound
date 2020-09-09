@@ -3,6 +3,7 @@ var newGameArea;
 var ctx
 var screenResized = false
 var player;
+var gameStarted = false;
 var playerControl = {
   LEFT: false,
   UP: false,
@@ -16,26 +17,40 @@ const sleep = (milliseconds) => {
   }
 function playerControlKeyPressed(event){
     const key = event.key
-    if(key == "ArrowRight" || key == "D" || key == "d"){
-        playerControl.RIGHT = true
-    }
-    if(key == "ArrowLeft" || key == "A" || key == "a"){
-        playerControl.LEFT = true
-    }
-    if(key == "ArrowUp" || key == "W" || key == "w"){
-        if(!player.gravityAvailabe){
-            playerControl.UP = true
+    if (gameStarted){
+        if(key == "ArrowRight" || key == "D" || key == "d"){
+            playerControl.RIGHT = true
+        }
+        if(key == "ArrowLeft" || key == "A" || key == "a"){
+            playerControl.LEFT = true
+        }
+        if(key == "ArrowUp" || key == "W" || key == "w"){
+            if(!player.gravityAvailabe){
+                playerControl.UP = true
+            }
+        }
+        if(key == "ArrowDown" || key == "s" || key == "S"){
+            playerControl.DOWN = true
+        }
+        if(key == " "){
+            playerControl.JUMP = true
+        }
+        if(key=="Enter"){
+            playerControl.ENTER = true
         }
     }
-    if(key == "ArrowDown" || key == "s" || key == "S"){
-        playerControl.DOWN = true
+    else {
+        if(key=="Enter"){
+            document.getElementById("screenLoader").style.animation = "fadeOut2 0.5s ease-in"
+            document.getElementById("startScreen").style.animation = "fadeOut 0.5s ease-in"
+            setTimeout(()=>{
+                document.getElementById("screenLoader").style.display = "none"
+                document.getElementById("startScreen").style.display = "none"
+            },500)
+            gameStarted = true
+        }
     }
-    if(key == " "){
-        playerControl.JUMP = true
-    }
-    if(key=="Enter"){
-        playerControl.ENTER = true
-    }
+    
 }
 function playerControlKeyReleased(event){
     const key = event.key
@@ -68,16 +83,10 @@ var testObject4
 var testObject5
 var gameCanvas
 function init() {
+    document.getElementById("screenLoader").style.opacity = 0.7
     gameCanvas = document.getElementById('gameAreaCanvas')
     newGameArea = new gameArea()
     ctx = newGameArea.context
-    /*testObject = new ObjectMaterial(10,640,280,60,"p1",0,objid++)
-    testObject2 = new ObjectMaterial(450,540,280,160,"p2",0,objid++)
-    testObject3 = new ObjectMaterial(50,550,50,90,"flag",1,objid++)
-    testObject4 = new ObjectMaterial(900,640,280,60,"p3",0,objid++)
-    testObject5 = new ObjectMaterial(480,460,100,80,"winningspot",2,objid++)
-    var objects = [testObject,testObject2,testObject3,testObject4,testObject5]
-    level = new gameLevel(950,560,objects,player)*/
     level = LevelGenerator()
     window.requestAnimationFrame(updateGameArea)
     document.addEventListener("keydown",playerControlKeyPressed, false);	
@@ -135,8 +144,10 @@ class gameArea {
 }
 function updateGameArea() {
     newGameArea.clear()
-    level.playLevel()
-    player.start()
+    if (level !=null){
+        level.playLevel()
+        player.start()
+    }
     window.requestAnimationFrame(updateGameArea)
 }
 document.addEventListener("DOMContentLoaded",init)

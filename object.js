@@ -1,25 +1,27 @@
 class ObjectMaterial {
     constructor (
-        x=0,y=0,width=50,height=50,name,material=0,id=0,moving=false,startX=null,startY=null,endX=null,endY=null,mSpeed=0,changing=false,fillColor="rgb(225, 237, 232)"
+        x=0,y=0,width=50,height=50,name,material=0,id=0,movingX=false,movingY=false,startX=null,startY=null,endX=null,endY=null,mSpeed=0,reverse=false,fillColor="rgb(225, 237, 232)"
     ){
         this.id = id
         this.x = x
         this.name = name
         this.y = y
-        this.isMoving = moving
+        this.isMovingX = movingX
+        this.isMovingY = movingY
         this.startX = startX
         this.startY = startY
         this.endX = endX
         this.endY = endY
         this.mSpeed = mSpeed
+        this.reverse = reverse
         this.width = width
         this.height = height
         this.material = material
         this.fillColor = fillColor
         this.collision = [false,false,false,false] //URDL
         this.playerKeyHistory = [false,false,false,false] //LURD
-        this.objectAnimeCycle = startX - 1
-        this.objectAnimeCycleStart = false
+        this.objectAnimeCycle = [startX - 1,startY - 1]
+        this.objectAnimeCycleStart = [false,false]
         this.key = Math.floor(Math.random() * 10)
         this.flagTouched = false
         this.flagYpos = this.y
@@ -31,6 +33,9 @@ class ObjectMaterial {
     objectInit(){
         this.objectDraw()
             switch(this.material){
+                case -1:
+                    this.nearObjectEffectDeath()
+                    break
                 case 0:
                     this.checkCollision()
                     break
@@ -118,18 +123,19 @@ class ObjectMaterial {
             ctx.fillStyle = "rgb(225, 237, 232)"
             ctx.font = 'bold 12px "Lucida Console", Monaco, monospace'
             if(!this.requestNextLevelFailed){
-                ++this.objectAnimeCycle
-                if(this.objectAnimeCycle>50 && this.objectAnimeCycle<100){
-                    ctx.fillText(`${this.winningPointText}..`, this.x+50, this.y+30)
+                ++this.objectAnimeCycle[0]
+                ctx.fillText(`${level.nextLevel}`, this.x+50, this.y+30)
+                if(this.objectAnimeCycle[0]>50 && this.objectAnimeCycle[0]<100){
+                    ctx.fillText(`${this.winningPointText}..`, this.x+50, this.y+45)
                 }
-                else if(this.objectAnimeCycle>=100 && this.objectAnimeCycle<150) {
-                    ctx.fillText(`${this.winningPointText}...`, this.x+50, this.y+30)
+                else if(this.objectAnimeCycle[0]>=100 && this.objectAnimeCycle[0]<150) {
+                    ctx.fillText(`${this.winningPointText}...`, this.x+50, this.y+45)
                 }
                 else {
-                    ctx.fillText(`${this.winningPointText}....`, this.x+50, this.y+30)
+                    ctx.fillText(`${this.winningPointText}....`, this.x+50, this.y+45)
                 }
-                if (this.objectAnimeCycle>150){
-                    this.objectAnimeCycle=0
+                if (this.objectAnimeCycle[0]>150){
+                    this.objectAnimeCycle[0]=0
                 }
             }
             else{
@@ -172,9 +178,9 @@ class ObjectMaterial {
     keyFlagPoint(){
         //ObjectMaterial(50,550,50,90,"star",objid++,1)
         if(this.flagTouched){
-            if(this.objectAnimeCycle<this.height-40){
+            if(this.objectAnimeCycle[0]<this.height-40){
                 this.flagYpos += 1
-                this.objectAnimeCycle++
+                this.objectAnimeCycle[0]++
             }
         }
         ctx.beginPath()
@@ -194,25 +200,47 @@ class ObjectMaterial {
         ctx.fill();
     }
     checkMoving(){
-        if(this.isMoving){
-            if(!this.objectAnimeCycleStart){
+        if(this.isMovingX){
+            if(!this.objectAnimeCycleStart[0]^this.reverse){
                 this.x +=this.mSpeed
             }
             else {
                 this.x -=this.mSpeed
             }
-            if(!this.objectAnimeCycleStart){
-                this.objectAnimeCycle +=this.mSpeed
+            if(!this.objectAnimeCycleStart[0]){
+                this.objectAnimeCycle[0] +=this.mSpeed
             }
             else {
-                this.objectAnimeCycle-=this.mSpeed
+                this.objectAnimeCycle[0]-=this.mSpeed
             }
-            if(this.objectAnimeCycle <this.startX){
-                this.objectAnimeCycleStart = false
+            if(this.objectAnimeCycle[0] <this.startX){
+                this.objectAnimeCycleStart[0] = false
             }
-            else if(this.objectAnimeCycle>=this.endX){
-                this.objectAnimeCycleStart = true
+            else if(this.objectAnimeCycle[0]>=this.endX){
+                this.objectAnimeCycleStart[0] = true
             }
+            
+        }
+        if(this.isMovingY){
+            if(!this.objectAnimeCycleStart[1]^this.reverse){
+                this.y +=this.mSpeed
+            }
+            else {
+                this.y -=this.mSpeed
+            }
+            if(!this.objectAnimeCycleStart[1]){
+                this.objectAnimeCycle[1] +=this.mSpeed
+            }
+            else {
+                this.objectAnimeCycle[1]-=this.mSpeed
+            }
+            if(this.objectAnimeCycle[1] <this.startY){
+                this.objectAnimeCycleStart[1] = false
+            }
+            else if(this.objectAnimeCycle[1]>=this.endY){
+                this.objectAnimeCycleStart[1] = true
+            }
+            
         }
     }
     drawPlatform(){
@@ -251,6 +279,9 @@ class ObjectMaterial {
     }
     objectDraw(){
         switch(this.material){
+            case -1:
+                this.drawPlatform()
+                break
             case 0:
                 this.drawPlatform()
                 break
@@ -275,26 +306,36 @@ class ObjectMaterial {
     storeKeyHistory(){
         //LURD
         if(!this.playerKeyHistory[0]){
-            if(this.isMoving){
-                this.playerKeyHistory[0] = playerControl.LEFT || !this.objectAnimeCycleStart
+            if(this.isMovingX){
+                this.playerKeyHistory[0] = playerControl.LEFT || (!this.objectAnimeCycleStart[0]^this.reverse)
             }
             else {
                 this.playerKeyHistory[0] = playerControl.LEFT
             }
         }
         if(!this.playerKeyHistory[1]){
-            this.playerKeyHistory[1] = playerControl.UP || playerControl.JUMP
+            if(this.isMovingY){
+                this.playerKeyHistory[1] = (playerControl.UP || playerControl.JUMP) || (!this.objectAnimeCycleStart[1]^this.reverse)
+            }
+            else {
+                this.playerKeyHistory[1] = playerControl.UP || playerControl.JUMP
+            }
         }
         if(!this.playerKeyHistory[2]){
             if(this.isMoving){
-                this.playerKeyHistory[2] = playerControl.RIGHT || this.objectAnimeCycleStart
+                this.playerKeyHistory[2] = playerControl.RIGHT || (this.objectAnimeCycleStart[0]^this.reverse)
             }
             else {
                 this.playerKeyHistory[2] = playerControl.RIGHT
             }
         }
         if(!this.playerKeyHistory[3]){
-            this.playerKeyHistory[3] = playerControl.DOWN || player.gravityAvailabe
+            if(this.isMovingY){
+                this.playerKeyHistory[3] = (playerControl.DOWN || player.gravityAvailabe) || (this.objectAnimeCycleStart[1]^this.reverse)
+            }
+            else {
+                this.playerKeyHistory[3] = playerControl.DOWN || player.gravityAvailabe
+            }
         }
     }
     objYbound(val=0){
@@ -371,8 +412,7 @@ class ObjectMaterial {
                 this.collision[1] = false
                 console.log("decollision R ",this.name)
             }
-            if (((y+player.height<=this.y && this.playerKeyHistory[1]) || !this.objXbound()) && player.dCollision[this.id]){
-                console.log("h")
+            if (((y+player.height<=this.y && (this.playerKeyHistory[1])) || !this.objXbound()) && player.dCollision[this.id]){
                 //U collision
                 this.collision[0] = false
                 console.log("decollision U ",this.name,this.id)
