@@ -271,6 +271,116 @@ var levels = {
     },
     Level5:{
         nextLevel:"Level6",
+        startX:170,
+        startY:555,
+        Objects:{
+            p1:{
+                x:460,
+                y:640,
+                width:380,
+                height:60,
+                material:0,
+                movingX:false,
+                movingY:true,
+                startX:510,
+                startY:640,
+                endX:510,
+                endY:1240,
+                mSpeed:2,
+                reverse:true,
+                color:"rgb(225, 237, 232)"
+            },
+            db2p1m:{
+                x:460,
+                y:180,
+                width:80,
+                height:30,
+                material:-1,
+                movingX:true,
+                movingY:false,
+                startX:460,
+                startY:160,
+                endX:660,
+                endY:320,
+                mSpeed:3,
+                reverse:false,
+                color:"#f24d1b"
+            },
+            db2p2m:{
+                x:560,
+                y:180,
+                width:80,
+                height:30,
+                material:-1,
+                movingX:true,
+                movingY:false,
+                startX:560,
+                startY:160,
+                endX:760,
+                endY:320,
+                mSpeed:3,
+                reverse:false,
+                color:"#f24d1b"
+            },
+            base2:{
+                x:540,
+                y:150,
+                width:220,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            dBoundry1:{
+                x:450,
+                y:-100,
+                width:10,
+                height:400,
+                material:-1,
+                color:"#f24d1b"
+            },
+            dBoundry2:{
+                x:670+160,
+                y:-100,
+                width:10,
+                height:400,
+                material:-1,
+                color:"#f24d1b"
+            },
+            flag2:{
+                x:650,
+                y:60,
+                width:50,
+                height:90,
+                material:1
+            },
+            base:{
+                x:10,
+                y:640,
+                width:320,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            winningP:{
+                x:980,
+                y:640,
+                width:320,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            winningSpot:{
+                x:1120,
+                y:560,
+                width:100,
+                height:80,
+                material:2,
+                color:"rgb(225, 237, 232)"
+            }
+        }
+    },
+    Level6:{
+        nextLevel:"Level7",
         startX:230,
         startY:320,
         Objects:{
@@ -346,8 +456,8 @@ var levels = {
             }
         }
     },
-    Level6:{
-        nextLevel:"Level7",
+    Level9:{
+        nextLevel:"Level10",
         startX:60,
         startY:560,
         Objects:{
@@ -464,83 +574,6 @@ var levels = {
     },
     Level7:{
         nextLevel:"Level8",
-        startX:170,
-        startY:555,
-        Objects:{
-            p1:{
-                x:510,
-                y:640,
-                width:280,
-                height:60,
-                material:0,
-                movingX:false,
-                movingY:true,
-                startX:510,
-                startY:640,
-                endX:510,
-                endY:1240,
-                mSpeed:6,
-                reverse:true,
-                color:"rgb(225, 237, 232)"
-            },
-            dp:{
-                x:510,
-                y:160,
-                width:280,
-                height:20,
-                material:-1,
-                color:"#f24d1b"
-            },
-            fp1:{
-                x:190,
-                y:290,
-                width:100,
-                height:60,
-                material:0,
-                color:"rgb(225, 237, 232)"
-            },
-            fp2:{
-                x:1010,
-                y:290,
-                width:100,
-                height:60,
-                material:0,
-                color:"rgb(225, 237, 232)"
-            },
-            flag1:{
-                x:235,
-                y:200,
-                width:50,
-                height:90,
-                material:1
-            },
-            flag2:{
-                x:1060,
-                y:200,
-                width:50,
-                height:90,
-                material:1
-            },
-            winningP:{
-                x:10,
-                y:640,
-                width:320,
-                height:60,
-                material:0,
-                color:"rgb(225, 237, 232)"
-            },
-            winningSpot:{
-                x:40,
-                y:560,
-                width:100,
-                height:80,
-                material:2,
-                color:"rgb(225, 237, 232)"
-            }
-        }
-    },
-    Level8:{
-        nextLevel:"Level9",
         startX:1050,
         startY:540,
         Objects:{
@@ -655,6 +688,215 @@ var levels = {
             }
         }
     },
+    Level8:{
+        nextLevel:"Level9",
+        startX:170,
+        startY:555,
+        Objects:{
+            p1:{
+                x:510,
+                y:640,
+                width:280,
+                height:60,
+                material:0,
+                movingX:false,
+                movingY:true,
+                startX:510,
+                startY:640,
+                endX:510,
+                endY:1240,
+                mSpeed:6,
+                reverse:true,
+                color:"rgb(225, 237, 232)"
+            },
+            dp:{
+                x:510,
+                y:160,
+                width:280,
+                height:20,
+                material:-1,
+                color:"#f24d1b"
+            },
+            fp1:{
+                x:190,
+                y:290,
+                width:100,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            fp2:{
+                x:1010,
+                y:290,
+                width:100,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            flag1:{
+                x:235,
+                y:200,
+                width:50,
+                height:90,
+                material:1
+            },
+            flag2:{
+                x:1060,
+                y:200,
+                width:50,
+                height:90,
+                material:1
+            },
+            winningP:{
+                x:10,
+                y:640,
+                width:320,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            winningSpot:{
+                x:40,
+                y:560,
+                width:100,
+                height:80,
+                material:2,
+                color:"rgb(225, 237, 232)"
+            }
+        }
+    },
+    
+    Level10:{
+        nextLevel:"GameOver",
+        startX:50,
+        startY:540,
+        Objects:{
+            base1:{
+                x:0,
+                y:640,
+                width:200,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            flag1:{
+                x:100,
+                y:550,
+                width:50,
+                height:90,
+                material:1
+            },
+            dp1m:{
+                x:300,
+                y:390,
+                width:50,
+                height:50,
+                material:-1,
+                movingX:false,
+                movingY:true,
+                startX:0,
+                startY:390,
+                endX:510,
+                endY:550,
+                mSpeed:3,
+                reverse:false,
+                color:"#f24d1b"
+            },
+            base2:{
+                x:300,
+                y:540,
+                width:150,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            flag2:{
+                x:400,
+                y:450,
+                width:50,
+                height:90,
+                material:1
+            },
+            dp2m:{
+                x:350,
+                y:315,
+                width:50,
+                height:50,
+                material:-1,
+                movingX:true,
+                movingY:false,
+                startX:350,
+                startY:90,
+                endX:800,
+                endY:250,
+                mSpeed:4,
+                reverse:false,
+                color:"#f24d1b"
+            },
+            base3:{
+                x:600,
+                y:440,
+                width:150,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            flag3:{
+                x:700,
+                y:350,
+                width:50,
+                height:90,
+                material:1
+            },
+            base4:{
+                x:900,
+                y:340,
+                width:150,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            flag4:{
+                x:1000,
+                y:250,
+                width:50,
+                height:90,
+                material:1
+            },
+            dp3m:{
+                x:1050,
+                y:190,
+                width:50,
+                height:50,
+                material:-1,
+                movingX:false,
+                movingY:true,
+                startX:0,
+                startY:90,
+                endX:510,
+                endY:250,
+                mSpeed:4,
+                reverse:false,
+                color:"#f24d1b"
+            },
+            base5:{
+                x:1140,
+                y:240,
+                width:150,
+                height:60,
+                material:0,
+                color:"rgb(225, 237, 232)"
+            },
+            winningSpot:{
+                x:1180,
+                y:160,
+                width:100,
+                height:80,
+                material:2,
+                color:"rgb(225, 237, 232)"
+            }
+        }
+    },
     
 }
 function LevelGenerator(level="Level1"){
@@ -666,6 +908,7 @@ function LevelGenerator(level="Level1"){
         }
         player = new Player()
         var object_id = 0
+        var flags = 0
         var objectArr = []
         var startX = levels[level].startX
         var startY = levels[level].startY
@@ -673,9 +916,11 @@ function LevelGenerator(level="Level1"){
         for (object in Objects){
             var objectGen = new ObjectMaterial(Objects[object].x,Objects[object].y,Objects[object].width,Objects[object].height,object,Objects[object].material,object_id++,Objects[object].movingX,Objects[object].movingY,Objects[object].startX,Objects[object].startY,Objects[object].endX,Objects[object].endY,Objects[object].mSpeed,Objects[object].reverse,Objects[object].color)
             objectArr.push(objectGen)
-            console.log(object)
+            if(Objects[object].material == 1){
+                flags++
+            }
         }
-        var level = new gameLevel(startX,startY,objectArr,player,levels[level].nextLevel,level)
+        var level = new gameLevel(startX,startY,objectArr,player,levels[level].nextLevel,level,flags)
         if(gameStarted){
             screenLoader.style.animation = "fadeOut 1s ease-in"
             setTimeout(()=>{
@@ -694,7 +939,7 @@ function LevelGenerator(level="Level1"){
 }
 class gameLevel {
     constructor (
-        startX,startY,objects,player,nextLevel,name
+        startX,startY,objects,player,nextLevel,name,totalFlags
     ){
         this.startX = startX
         this.startY = startY
@@ -703,6 +948,7 @@ class gameLevel {
         this.nextLevelKey = []
         this.nextLevel = nextLevel
         this.name = name
+        this.totalFlags = totalFlags
         this.start()
     }
     start(){

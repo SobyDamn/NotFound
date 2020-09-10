@@ -57,6 +57,7 @@ class ObjectMaterial {
             this.fillColor = `#42f5a1`
             ctx.fillStyle = this.fillColor
             if(!playerControl.ENTER){
+                ctx.textAlign = "center"
                 ctx.fillText('Press Enter!', this.x, this.y-50)
                 ctx.fill()
             }
@@ -93,7 +94,7 @@ class ObjectMaterial {
                 if (this.enteredKey.length !=0 && level.nextLevelKey.length!=0 && !this.requestNextLevel){
                     this.requestNextLevel = true
                     this.winningPointText = "Fetching"
-                    if(JSON.stringify(this.enteredKey)==JSON.stringify(level.nextLevelKey)){
+                    if(JSON.stringify(this.enteredKey)==JSON.stringify(level.nextLevelKey) && this.enteredKey.length == level.totalFlags){
                         console.log("yes")
                         setTimeout(()=>{
                             this.winningPointText = "Loading"
@@ -108,7 +109,6 @@ class ObjectMaterial {
                             this.requestNextLevelFailed = true
                             setTimeout(()=>{
                                 level = LevelGenerator(level.name)
-                                console.log("load level again")
                             },1000)
                         },1000)
                         console.log("no")
@@ -124,7 +124,7 @@ class ObjectMaterial {
             ctx.font = 'bold 12px "Lucida Console", Monaco, monospace'
             if(!this.requestNextLevelFailed){
                 ++this.objectAnimeCycle[0]
-                ctx.fillText(`${level.nextLevel}`, this.x+50, this.y+30)
+                ctx.fillText(`${level.name}`, this.x+50, this.y+30)
                 if(this.objectAnimeCycle[0]>50 && this.objectAnimeCycle[0]<100){
                     ctx.fillText(`${this.winningPointText}..`, this.x+50, this.y+45)
                 }
@@ -151,7 +151,6 @@ class ObjectMaterial {
         const object = event.currentTarget.Object
         if (Number.isInteger(keyPas) && object.enteredKey.length <4){
             object.enteredKey.push(keyPas)
-            console.log("h")
             playString("keyPress")
         }
         else if(key == "Backspace"){

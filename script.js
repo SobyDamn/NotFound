@@ -1,9 +1,10 @@
-var objid = 0
+var objid = 0;
 var newGameArea;
 var ctx
 var screenResized = false
 var player;
 var gameStarted = false;
+var deaths = 0
 var playerControl = {
   LEFT: false,
   UP: false,

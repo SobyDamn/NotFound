@@ -32,6 +32,7 @@ class Player {
         this.borderCollision()
         this.characterDraw()
         this.attachControls()
+        this.deathCounter()
     }
     newPos(val,speed=1){
         //1,2,3,4 as URDL
@@ -173,10 +174,26 @@ class Player {
     }
     isDead(){
         if (this.isAlive){
+            deaths++
             this.isAlive = false
             console.log("Payer Died")
             playString()
         }
+    }
+    deathCounter(){
+        ctx.beginPath()
+        ctx.lineWidth = "4";
+        ctx.strokeStyle = "rgb(225, 237, 232,0.5)";
+        ctx.fillStyle = "rgb(225, 237, 232,0.5)"
+        ctx.font = 'bold 18px Monospace'
+        ctx.fillText('x', 50, 65)
+        ctx.fillText('x', 70, 65)
+        ctx.font = 'bold 25px "Comic Sans MS", cursive, sans-serif'
+        ctx.fillText('x', 100, 70)
+        ctx.textAlign = "left"
+        ctx.fillText(`${deaths}`, 110, 70)
+        ctx.strokeRect(40, 50, 40, 25)
+        ctx.stroke()
     }
     characterDraw() {
         var eyePos = this.x
@@ -206,6 +223,7 @@ class Player {
                 ctx.fillText('x', eyePos+10, this.y+15)
                 ctx.fillText('x', eyePos+30, this.y+15)
                 this.charAlpha -= 0.01;
+                ctx.stroke()
             }
             else if(this.deathAnimCycle >50){
                 /*this.x = this.startX
