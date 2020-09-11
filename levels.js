@@ -1007,8 +1007,8 @@ var levels = {
                 startX:0,
                 startY:20,
                 endX:510,
-                endY:130,
-                mSpeed:4,
+                endY:150,
+                mSpeed:3,
                 reverse:false,
                 color:"#f24d1b"
             },
@@ -1031,7 +1031,7 @@ var levels = {
                 startX:0,
                 startY:50,
                 endX:510,
-                endY:130,
+                endY:150,
                 mSpeed:3,
                 reverse:false,
                 color:"#f24d1b"
