@@ -77,11 +77,6 @@ function playerControlKeyReleased(event){
         playerControl.ENTER = false
     }
 }
-var testObject
-var testObject2
-var testObject3
-var testObject4
-var testObject5
 var gameCanvas
 function init() {
     document.getElementById("screenLoader").style.opacity = 0.7

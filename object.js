@@ -1,3 +1,9 @@
+/**
+    Death Material Material type -1
+    Normal Material type 0
+    Flag Material type 1
+    Finish Point Material type 2
+ */
 class ObjectMaterial {
     constructor (
         x=0,y=0,width=50,height=50,name,material=0,id=0,movingX=false,movingY=false,startX=null,startY=null,endX=null,endY=null,mSpeed=0,reverse=false,fillColor="rgb(225, 237, 232)"
